@@ -258,197 +258,199 @@ export default function CurriculumManager() {
                 </CardContent>
             </Card>
 
-            {/* Add/Edit Form */}
+            {/* Add/Edit Form Modal */}
             {showAddForm && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{editingCurriculum ? 'Edit Curriculum' : 'Add New Curriculum'}</CardTitle>
-                        <CardDescription>
-                            {editingCurriculum ? 'Update curriculum details' : 'Upload and configure new curriculum resources'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Curriculum Name *</Label>
-                                    <Input
-                                        id="name"
-                                        placeholder="e.g., Computer Science Grade 12"
-                                        value={formData.name}
-                                        onChange={(e) => handleInputChange('name', e.target.value)}
-                                        required
-                                    />
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-50">
+                    <Card className="max-w-4xl mx-4 shadow-2xl border-2 max-h-[90vh] overflow-y-auto">
+                        <CardHeader>
+                            <CardTitle>{editingCurriculum ? 'Edit Curriculum' : 'Add New Curriculum'}</CardTitle>
+                            <CardDescription>
+                                {editingCurriculum ? 'Update curriculum details' : 'Upload and configure new curriculum resources'}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Curriculum Name *</Label>
+                                        <Input
+                                            id="name"
+                                            placeholder="e.g., Computer Science Grade 12"
+                                            value={formData.name}
+                                            onChange={(e) => handleInputChange('name', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="subject">Subject *</Label>
+                                        <Select value={formData.subject} onValueChange={(value) => handleInputChange('subject', value)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Subject" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Computer Science">Computer Science</SelectItem>
+                                                <SelectItem value="Mathematics">Mathematics</SelectItem>
+                                                <SelectItem value="Physics">Physics</SelectItem>
+                                                <SelectItem value="Chemistry">Chemistry</SelectItem>
+                                                <SelectItem value="Biology">Biology</SelectItem>
+                                                <SelectItem value="English">English</SelectItem>
+                                                <SelectItem value="History">History</SelectItem>
+                                                <SelectItem value="Geography">Geography</SelectItem>
+                                                <SelectItem value="Economics">Economics</SelectItem>
+                                                <SelectItem value="Business Studies">Business Studies</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="subject">Subject *</Label>
-                                    <Select value={formData.subject} onValueChange={(value) => handleInputChange('subject', value)}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Subject" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Computer Science">Computer Science</SelectItem>
-                                            <SelectItem value="Mathematics">Mathematics</SelectItem>
-                                            <SelectItem value="Physics">Physics</SelectItem>
-                                            <SelectItem value="Chemistry">Chemistry</SelectItem>
-                                            <SelectItem value="Biology">Biology</SelectItem>
-                                            <SelectItem value="English">English</SelectItem>
-                                            <SelectItem value="History">History</SelectItem>
-                                            <SelectItem value="Geography">Geography</SelectItem>
-                                            <SelectItem value="Economics">Economics</SelectItem>
-                                            <SelectItem value="Business Studies">Business Studies</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="grade">Grade *</Label>
-                                    <Select value={formData.grade} onValueChange={(value) => handleInputChange('grade', value)}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Grade" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {[...Array(12)].map((_, i) => (
-                                                <SelectItem key={i + 1} value={(i + 1).toString()}>
-                                                    Grade {i + 1}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="grade">Grade *</Label>
+                                        <Select value={formData.grade} onValueChange={(value) => handleInputChange('grade', value)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Grade" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {[...Array(12)].map((_, i) => (
+                                                    <SelectItem key={i + 1} value={(i + 1).toString()}>
+                                                        Grade {i + 1}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="board">Board *</Label>
+                                        <Select value={formData.board} onValueChange={(value) => handleInputChange('board', value)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Board" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="CBSE">CBSE</SelectItem>
+                                                <SelectItem value="NCERT">NCERT</SelectItem>
+                                                <SelectItem value="ICSE">ICSE</SelectItem>
+                                                <SelectItem value="State Board">State Board</SelectItem>
+                                                <SelectItem value="IB">International Baccalaureate</SelectItem>
+                                                <SelectItem value="Cambridge">Cambridge</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="board">Board *</Label>
-                                    <Select value={formData.board} onValueChange={(value) => handleInputChange('board', value)}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Board" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="CBSE">CBSE</SelectItem>
-                                            <SelectItem value="NCERT">NCERT</SelectItem>
-                                            <SelectItem value="ICSE">ICSE</SelectItem>
-                                            <SelectItem value="State Board">State Board</SelectItem>
-                                            <SelectItem value="IB">International Baccalaureate</SelectItem>
-                                            <SelectItem value="Cambridge">Cambridge</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="bookTitle">Book Title *</Label>
-                                    <Input
-                                        id="bookTitle"
-                                        placeholder="e.g., Computer Science with Python"
-                                        value={formData.bookTitle}
-                                        onChange={(e) => handleInputChange('bookTitle', e.target.value)}
-                                        required
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="bookTitle">Book Title *</Label>
+                                        <Input
+                                            id="bookTitle"
+                                            placeholder="e.g., Computer Science with Python"
+                                            value={formData.bookTitle}
+                                            onChange={(e) => handleInputChange('bookTitle', e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="author">Author</Label>
+                                        <Input
+                                            id="author"
+                                            placeholder="e.g., Sumita Arora"
+                                            value={formData.author}
+                                            onChange={(e) => handleInputChange('author', e.target.value)}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="author">Author</Label>
-                                    <Input
-                                        id="author"
-                                        placeholder="e.g., Sumita Arora"
-                                        value={formData.author}
-                                        onChange={(e) => handleInputChange('author', e.target.value)}
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="publisher">Publisher</Label>
-                                    <Input
-                                        id="publisher"
-                                        placeholder="e.g., Dhanpat Rai"
-                                        value={formData.publisher}
-                                        onChange={(e) => handleInputChange('publisher', e.target.value)}
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="publisher">Publisher</Label>
+                                        <Input
+                                            id="publisher"
+                                            placeholder="e.g., Dhanpat Rai"
+                                            value={formData.publisher}
+                                            onChange={(e) => handleInputChange('publisher', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="edition">Edition</Label>
+                                        <Input
+                                            id="edition"
+                                            placeholder="e.g., 2023-24"
+                                            value={formData.edition}
+                                            onChange={(e) => handleInputChange('edition', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="chapters">Number of Chapters</Label>
+                                        <Input
+                                            id="chapters"
+                                            type="number"
+                                            placeholder="e.g., 15"
+                                            value={formData.chapters}
+                                            onChange={(e) => handleInputChange('chapters', e.target.value)}
+                                            min="1"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="edition">Edition</Label>
-                                    <Input
-                                        id="edition"
-                                        placeholder="e.g., 2023-24"
-                                        value={formData.edition}
-                                        onChange={(e) => handleInputChange('edition', e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="chapters">Number of Chapters</Label>
-                                    <Input
-                                        id="chapters"
-                                        type="number"
-                                        placeholder="e.g., 15"
-                                        value={formData.chapters}
-                                        onChange={(e) => handleInputChange('chapters', e.target.value)}
-                                        min="1"
-                                    />
-                                </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="topics">Topics (comma separated)</Label>
-                                <textarea
-                                    id="topics"
-                                    className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                    placeholder="e.g., Python Programming, Data Structures, Database Management"
-                                    value={formData.topics}
-                                    onChange={(e) => handleInputChange('topics', e.target.value)}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="file">Upload Curriculum File</Label>
-                                <div className="flex items-center gap-4">
-                                    <Input
-                                        id="file"
-                                        type="file"
-                                        accept=".pdf,.doc,.docx"
-                                        onChange={handleFileUpload}
-                                        className="flex-1"
+                                <div className="space-y-2">
+                                    <Label htmlFor="topics">Topics (comma separated)</Label>
+                                    <textarea
+                                        id="topics"
+                                        className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        placeholder="e.g., Python Programming, Data Structures, Database Management"
+                                        value={formData.topics}
+                                        onChange={(e) => handleInputChange('topics', e.target.value)}
                                     />
-                                    <Upload className="h-4 w-4 text-muted-foreground" />
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Supported formats: PDF, DOC, DOCX (Max 50MB)
-                                </p>
-                            </div>
 
-                            <div className="flex gap-3">
-                                <Button type="submit" className="flex-1">
-                                    {editingCurriculum ? 'Update Curriculum' : 'Add Curriculum'}
-                                </Button>
-                                <Button 
-                                    type="button" 
-                                    variant="outline" 
-                                    onClick={() => {
-                                        setShowAddForm(false);
-                                        setEditingCurriculum(null);
-                                        setFormData({
-                                            name: "",
-                                            subject: "",
-                                            grade: "",
-                                            board: "",
-                                            bookTitle: "",
-                                            author: "",
-                                            publisher: "",
-                                            edition: "",
-                                            chapters: "",
-                                            topics: "",
-                                            file: null
-                                        });
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                                <div className="space-y-2">
+                                    <Label htmlFor="file">Upload Curriculum File</Label>
+                                    <div className="flex items-center gap-4">
+                                        <Input
+                                            id="file"
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={handleFileUpload}
+                                            className="flex-1"
+                                        />
+                                        <Upload className="h-4 w-4 text-muted-foreground" />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        Supported formats: PDF, DOC, DOCX (Max 50MB)
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <Button type="submit" className="flex-1">
+                                        {editingCurriculum ? 'Update Curriculum' : 'Add Curriculum'}
+                                    </Button>
+                                    <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        onClick={() => {
+                                            setShowAddForm(false);
+                                            setEditingCurriculum(null);
+                                            setFormData({
+                                                name: "",
+                                                subject: "",
+                                                grade: "",
+                                                board: "",
+                                                bookTitle: "",
+                                                author: "",
+                                                publisher: "",
+                                                edition: "",
+                                                chapters: "",
+                                                topics: "",
+                                                file: null
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
             )}
 
             {/* Curricula Grid */}
