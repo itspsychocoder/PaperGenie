@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
   IconCamera,
   IconChartBar,
@@ -48,27 +49,27 @@ export function AppSidebar({
     navMain: [
       {
         title: "Dashboard",
-        url: "#",
+        url: "/dashboard",
         icon: IconDashboard,
       },
       {
         title: "Generate Assessment",
-        url: "#",
+        url: "/dashboard/generate-assessment",
         icon: IconListDetails,
       },
       {
         title: "My Assessments",
-        url: "#",
+        url: "/dashboard/assessments",
         icon: IconChartBar,
       },
       {
         title: "Curriculum Manager",
-        url: "#",
+        url: "/dashboard/curriculum-manager",
         icon: IconFolder,
       },
       {
         title: "Reports",
-        url: "#",
+        url: "/dashboard/reports",
         icon: IconChartBar,
       },
     ],
@@ -123,17 +124,17 @@ export function AppSidebar({
     navSecondary: [
       {
         title: "Settings",
-        url: "#",
+        url: "/dashboard/settings",
         icon: IconSettings,
       },
       {
         title: "Get Help",
-        url: "#",
+        url: "/dashboard/help",
         icon: IconHelp,
       },
       {
         title: "Search",
-        url: "#",
+        url: "/dashboard/search",
         icon: IconSearch,
       },
     ]
@@ -144,10 +145,10 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <a href="#">
+              <Link href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">PaperGenie.</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
