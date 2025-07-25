@@ -59,8 +59,8 @@ export function AppSidebar({
       },
       {
         title: "My Assessments",
-        url: "/dashboard/assessments",
-        icon: IconChartBar,
+        url: "/dashboard/my-assessments",
+        icon: IconFileDescription,
       },
       {
         title: "Curriculum Manager",
@@ -70,7 +70,7 @@ export function AppSidebar({
       {
         title: "Reports",
         url: "/dashboard/reports",
-        icon: IconChartBar,
+        icon: IconReport,
       },
     ],
     navClouds: [
