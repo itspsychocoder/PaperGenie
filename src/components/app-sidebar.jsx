@@ -48,7 +48,7 @@ export function AppSidebar({
     navMain: [
       {
         title: "Dashboard",
-        url: "#",
+        url: "/dashboard",
         icon: IconDashboard,
       },
       {
