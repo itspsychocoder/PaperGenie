@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { storage } from '@/firebase/firebaseStorage'
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
@@ -34,48 +34,18 @@ import {
     Search,
     Filter
 } from "lucide-react"
+import toast from "react-hot-toast"
 
 export default function CurriculumManager() {
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [fileUrl, setFileUrl] = useState("")
 
-    const [curricula, setCurricula] = useState([
-        {
-            id: 1,
-            name: "Computer Science Grade 12",
-            subject: "Computer Science",
-            grade: "12",
-            board: "CBSE",
-            bookTitle: "Computer Science with Python",
-            author: "Sumita Arora",
-            publisher: "Dhanpat Rai",
-            edition: "2023-24",
-            chapters: 15,
-            topics: ["Python Programming", "Data Structures", "Database Management", "Computer Networks"],
-            uploadDate: "2024-01-15",
-            fileType: "PDF",
-            fileSize: "12.5 MB",
-            status: "Active"
-        },
-        {
-            id: 2,
-            name: "Mathematics Grade 11",
-            subject: "Mathematics",
-            grade: "11",
-            board: "NCERT",
-            bookTitle: "Mathematics Textbook",
-            author: "NCERT",
-            publisher: "NCERT Publication",
-            edition: "2023",
-            chapters: 16,
-            topics: ["Sets", "Relations and Functions", "Trigonometry", "Calculus"],
-            uploadDate: "2024-01-10",
-            fileType: "PDF",
-            fileSize: "8.2 MB",
-            status: "Active"
-        }
-    ]);
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+
+    const [curricula, setCurricula] = useState([]);
 
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingCurriculum, setEditingCurriculum] = useState(null);
@@ -92,10 +62,52 @@ export default function CurriculumManager() {
         author: "",
         publisher: "",
         edition: "",
-        chapters: "",
+        numberOfChapters: "",
         topics: "",
         file: null
     });
+
+     // Fetch curricula on component mount
+     useEffect(() => {
+        fetchCurricula();
+    }, []);
+
+    const fetchCurricula = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("No authentication token found");
+            }
+
+            const response = await fetch('/api/curriculum/get-curriculums', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+         console.log(response);
+
+            const data = await response.json();
+            if (data.type == "success") {
+                setCurricula(data.curriculums);
+            }
+            else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error('Error fetching curricula:', error);
+            setError(error.message);
+            setCurricula([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({
@@ -175,36 +187,44 @@ export default function CurriculumManager() {
             author: formData.author || "Not specified",
             publisher: formData.publisher || "Not specified",
             edition: formData.edition || "Latest",
-            chapters: parseInt(formData.chapters) || 0,
-            topics: topicsArray,
-            fileUrl: fileUrl || "",
-            fileName: formData.file ? formData.file.name : "",
-            fileType: formData.file ? (formData.file.type.includes('pdf') ? 'PDF' : 'Document') : 'PDF',
-            fileSize: formData.file ? `${(formData.file.size / (1024 * 1024)).toFixed(1)} MB` : "N/A",
-            status: "Active"
+            numberOfChapters: parseInt(formData.chapters) || 0,
+            topics: topicsArray
+            // fileName: formData.file ? formData.file.name : "",
+            // fileType: formData.file ? (formData.file.type.includes('pdf') ? 'PDF' : 'Document') : 'PDF',
+            // fileSize: formData.file ? `${(formData.file.size / (1024 * 1024)).toFixed(1)} MB` : "N/A",
+            // status: "Active"
         };
 
         try {
             setIsUploading(true);
-            
+            const token = localStorage.getItem("token");
+       
             if (editingCurriculum) {
-                // Update existing curriculum
-                const response = await fetch(`/api/update-curriculum/${editingCurriculum.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(curriculumData),
-                });
+               // Update existing curriculum
+            const response = await fetch(`/api/curriculum/update-curriculum`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    ...curriculumData,
+                    curriculumId: editingCurriculum._id,
+                    fileUrl: editingCurriculum.file
+                }),
+            });
 
-                if (!response.ok) {
-                    throw new Error('Failed to update curriculum');
-                }
-
-                const updatedCurriculum = await response.json();
+            const result = await response.json();
+            
+            if (result.type === "success") {
                 setCurricula(prev => prev.map(curr => 
-                    curr.id === editingCurriculum.id ? { ...updatedCurriculum, id: editingCurriculum.id } : curr
+                    curr._id === editingCurriculum._id ? result.curriculum : curr
                 ));
+                toast.success('Curriculum updated successfully!');
+            } else {
+                toast.error(result.message);
+                return;
+            }
             } else {
                 // Add new curriculum
                 const response = await fetch('/api/curriculum/add-curriculum', {
@@ -213,7 +233,7 @@ export default function CurriculumManager() {
                         'Content-Type': 'application/json',
                         "Authorization": `Bearer ${localStorage.getItem("token")}`
                     },
-                    body: JSON.stringify(curriculumData),
+                    body: JSON.stringify({...curriculumData, file: fileUrl}),
                 });
 
                 if (!response.ok) {
@@ -234,7 +254,7 @@ export default function CurriculumManager() {
                 author: "",
                 publisher: "",
                 edition: "",
-                chapters: "",
+                numberOfChapters: "",
                 topics: "",
                 file: null
             });
@@ -261,24 +281,50 @@ export default function CurriculumManager() {
             author: curriculum.author,
             publisher: curriculum.publisher,
             edition: curriculum.edition,
-            chapters: curriculum.chapters.toString(),
+            numberOfChapters: curriculum.numberOfChapters.toString(),
             topics: curriculum.topics.join(', '),
-            file: null
+            file: null // File will not be editable, just the URL
         });
         setEditingCurriculum(curriculum);
         setShowAddForm(true);
     };
 
-    const handleDelete = (id) => {
-        if (confirm("Are you sure you want to delete this curriculum?")) {
-            setCurricula(prev => prev.filter(curr => curr.id !== id));
+    const handleDelete = async (curriculum) => {
+        if (!confirm("Are you sure you want to delete this curriculum?")) {
+            return;
+        }
+    
+        try {
+            toast.loading('Deleting curriculum...');
+            const token = localStorage.getItem("token");
+            const response = await fetch('/api/curriculum/delete-curriculum', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    curriculumId: curriculum._id
+                })
+            });
+    
+            const result = await response.json();
+            toast.dismiss();
+            if (result.type === "success") {
+                setCurricula(prev => prev.filter(curr => curr._id !== curriculum._id));
+                toast.success('Curriculum deleted successfully!');
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            console.error('Error deleting curriculum:', error);
+            toast.error('Failed to delete curriculum. Please try again.');
         }
     };
-
     const filteredCurricula = curricula.filter(curriculum => {
-        const matchesSearch = curriculum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            curriculum.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            curriculum.bookTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = curriculum.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            curriculum.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            curriculum.bookTitle?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesGrade = !filterGrade || filterGrade === 'all' || curriculum.grade === filterGrade;
         const matchesSubject = !filterSubject || filterSubject === 'all' || curriculum.subject === filterSubject;
         
@@ -469,7 +515,7 @@ export default function CurriculumManager() {
                                             id="chapters"
                                             type="number"
                                             placeholder="e.g., 15"
-                                            value={formData.chapters}
+                                            value={formData.numberOfChapters}
                                             onChange={(e) => handleInputChange('chapters', e.target.value)}
                                             min="1"
                                         />
@@ -488,6 +534,9 @@ export default function CurriculumManager() {
                                 </div>
 
                                 <div className="space-y-2">
+                                {
+                                editingCurriculum ?'File Not Editable, to change file, you need to add new curriculum' : (
+                                    <>
                                     <Label htmlFor="file">Upload Curriculum File</Label>
                                     <div className="flex items-center gap-4">
                                         <Input
@@ -502,6 +551,9 @@ export default function CurriculumManager() {
                                     <p className="text-xs text-muted-foreground">
                                         Supported formats: PDF, DOC, DOCX (Max 50MB)
                                     </p>
+                                    </>
+                                
+                                )}
                                 </div>
 
                                 <div className="flex gap-3">
@@ -523,7 +575,7 @@ export default function CurriculumManager() {
                                                 author: "",
                                                 publisher: "",
                                                 edition: "",
-                                                chapters: "",
+                                                numberOfChapters: "",
                                                 topics: "",
                                                 file: null
                                             });
@@ -538,10 +590,19 @@ export default function CurriculumManager() {
                 </div>
             )}
 
+            {
+                isLoading && (
+                    <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div>
+                        <p className="ml-4 text-muted-foreground">Loading curriculum...</p>
+                    </div>
+                )
+            }
+
             {/* Curricula Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCurricula.map((curriculum) => (
-                    <Card key={curriculum.id} className="hover:shadow-lg transition-shadow">
+                    <Card key={curriculum._id} className="hover:shadow-lg transition-shadow">
                         <CardHeader>
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -571,7 +632,7 @@ export default function CurriculumManager() {
                                     <p><strong>Author:</strong> {curriculum.author}</p>
                                     <p><strong>Publisher:</strong> {curriculum.publisher}</p>
                                     <p><strong>Edition:</strong> {curriculum.edition}</p>
-                                    <p><strong>Chapters:</strong> {curriculum.chapters}</p>
+                                    <p><strong>Chapters:</strong> {curriculum.numberOfChapters}</p>
                                 </div>
 
                                 <div className="flex flex-wrap gap-1 mt-2">
@@ -613,7 +674,7 @@ export default function CurriculumManager() {
                                     <Button 
                                         size="sm" 
                                         variant="destructive"
-                                        onClick={() => handleDelete(curriculum.id)}
+                                        onClick={() => handleDelete(curriculum)}
                                     >
                                         <Trash2 className="h-3 w-3" />
                                     </Button>

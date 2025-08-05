@@ -3,7 +3,7 @@ import connectDB from "@/middlewares/connectDB";
 import jwt from 'jsonwebtoken';
 
 const handler = async (req, res) => {
-    if (req.method === "GET") {
+    if (req.method === "POST") {
         try {
             const token = req.headers.authorization?.split(" ")[1];
             if (!token) {
@@ -12,6 +12,7 @@ const handler = async (req, res) => {
                     message: "Unauthorized"
                 });
             }
+
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             if (!decoded) {
                 return res.status(401).json({
@@ -20,18 +21,41 @@ const handler = async (req, res) => {
                 });
             }
 
-            const curriculums = await Curriculum.find({ uploadedBy: decoded.userId });
+            const { curriculumId } = req.body;
+
+            if (!curriculumId) {
+                return res.status(400).json({
+                    type: "error",
+                    message: "Curriculum ID is required"
+                });
+            }
+
+            // Check if curriculum exists and belongs to the user
+            const existingCurriculum = await Curriculum.findOne({
+                _id: curriculumId,
+                uploadedBy: decoded.userId
+            });
+
+            if (!existingCurriculum) {
+                return res.status(404).json({
+                    type: "error",
+                    message: "Curriculum not found or you don't have permission to update it"
+                });
+            }
+
+            // delete the curriculum
+            await Curriculum.findByIdAndDelete(curriculumId);
 
             return res.status(200).json({
                 type: "success",
-                message: "Curriculums retrieved successfully",
-                curriculums
+                message: "Curriculum Deleted successfully",
             });
+
         } catch (err) {
-            console.error("Curriculum retrieve error:", err);
+            console.error("Curriculum delete error:", err);
             return res.status(500).json({
                 type: "error",
-                message: "Something went wrong while getting curriculums.",
+                message: "Something went wrong while deleting curriculum.",
                 error: err.message,
             });
         }
