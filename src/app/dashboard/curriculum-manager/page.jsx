@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { storage } from '@/firebase/firebaseStorage'
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import {
     Card,
     CardContent,
@@ -34,6 +36,10 @@ import {
 } from "lucide-react"
 
 export default function CurriculumManager() {
+    const [isUploading, setIsUploading] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const [fileUrl, setFileUrl] = useState("")
+
     const [curricula, setCurricula] = useState([
         {
             id: 1,
@@ -98,17 +104,55 @@ export default function CurriculumManager() {
         }));
     };
 
-    const handleFileUpload = (e) => {
+   
+    const handleFileUpload = async (e) => {
         const file = e.target.files[0];
-        if (file) {
+        if (!file) return;
+
+        // Validate file type and size
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please upload only PDF, DOC, or DOCX files');
+            return;
+        }
+
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+            alert('File size should be less than 50MB');
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        try {
+            // Create a unique filename
+            const timestamp = Date.now();
+            const fileName = `curriculum_${timestamp}_${file.name}`;
+            const storageRef = ref(storage, `papergenie/${fileName}`);
+
+            // Upload file to Firebase Storage
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            // Update form data with file info and URL
             setFormData(prev => ({
                 ...prev,
-                file: file
+                file: file,
+                fileUrl: downloadURL
             }));
+            setFileUrl(downloadURL);
+
+            console.log('File uploaded successfully:', downloadURL);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload file. Please try again.');
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Validate required fields
@@ -122,8 +166,7 @@ export default function CurriculumManager() {
 
         const topicsArray = formData.topics.split(',').map(topic => topic.trim()).filter(topic => topic);
         
-        const newCurriculum = {
-            id: editingCurriculum ? editingCurriculum.id : Date.now(),
+        const curriculumData = {
             name: formData.name,
             subject: formData.subject,
             grade: formData.grade,
@@ -134,36 +177,78 @@ export default function CurriculumManager() {
             edition: formData.edition || "Latest",
             chapters: parseInt(formData.chapters) || 0,
             topics: topicsArray,
-            uploadDate: editingCurriculum ? editingCurriculum.uploadDate : new Date().toISOString().split('T')[0],
-            fileType: formData.file ? formData.file.type.includes('pdf') ? 'PDF' : 'Document' : 'PDF',
+            fileUrl: fileUrl || "",
+            fileName: formData.file ? formData.file.name : "",
+            fileType: formData.file ? (formData.file.type.includes('pdf') ? 'PDF' : 'Document') : 'PDF',
             fileSize: formData.file ? `${(formData.file.size / (1024 * 1024)).toFixed(1)} MB` : "N/A",
             status: "Active"
         };
 
-        if (editingCurriculum) {
-            setCurricula(prev => prev.map(curr => 
-                curr.id === editingCurriculum.id ? newCurriculum : curr
-            ));
-        } else {
-            setCurricula(prev => [...prev, newCurriculum]);
-        }
+        try {
+            setIsUploading(true);
+            
+            if (editingCurriculum) {
+                // Update existing curriculum
+                const response = await fetch(`/api/update-curriculum/${editingCurriculum.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(curriculumData),
+                });
 
-        // Reset form
-        setFormData({
-            name: "",
-            subject: "",
-            grade: "",
-            board: "",
-            bookTitle: "",
-            author: "",
-            publisher: "",
-            edition: "",
-            chapters: "",
-            topics: "",
-            file: null
-        });
-        setShowAddForm(false);
-        setEditingCurriculum(null);
+                if (!response.ok) {
+                    throw new Error('Failed to update curriculum');
+                }
+
+                const updatedCurriculum = await response.json();
+                setCurricula(prev => prev.map(curr => 
+                    curr.id === editingCurriculum.id ? { ...updatedCurriculum, id: editingCurriculum.id } : curr
+                ));
+            } else {
+                // Add new curriculum
+                const response = await fetch('/api/curriculum/add-curriculum', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                    body: JSON.stringify(curriculumData),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add curriculum');
+                }
+
+                const newCurriculum = await response.json();
+                setCurricula(prev => [...prev, { ...newCurriculum, id: Date.now() }]);
+            }
+
+            // Reset form
+            setFormData({
+                name: "",
+                subject: "",
+                grade: "",
+                board: "",
+                bookTitle: "",
+                author: "",
+                publisher: "",
+                edition: "",
+                chapters: "",
+                topics: "",
+                file: null
+            });
+            setFileUrl("");
+            setShowAddForm(false);
+            setEditingCurriculum(null);
+
+            alert(editingCurriculum ? 'Curriculum updated successfully!' : 'Curriculum added successfully!');
+        } catch (error) {
+            console.error('Error saving curriculum:', error);
+            alert('Failed to save curriculum. Please try again.');
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleEdit = (curriculum) => {

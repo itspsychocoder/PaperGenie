@@ -38,7 +38,7 @@ const handler = async (req, res) => {
 
       const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '1d'});
       const sendUser = {
-        _id: user._id,
+        userId: user._id,
         email: user.email,
         name: user.name,
       };

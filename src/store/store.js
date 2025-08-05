@@ -1,10 +1,14 @@
 import { create } from 'zustand'
 
 const useStore = create((set) => ({
-  username: "psycho",
+  name: "psycho",
   email: "m@example.com",
   avatar: "/avatars/shadcn.jpg",
-  inc: () => set((state) => ({ count: state.count + 1 })),
+  userId: "",
+  SetName: (name) => set({ name }),
+  SetEmail: (email) => set({ email }),
+  SetAvatar: (avatar) => set({ avatar }),
+  SetUserId: (userId) => set({ userId }),
 }))
 
 export default useStore

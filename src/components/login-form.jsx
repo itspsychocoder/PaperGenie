@@ -13,11 +13,15 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
 import toast from "react-hot-toast"
+import useStore from "@/store/store"
+import { useRouter } from "next/navigation"
 
 export function LoginForm({
   className,
   ...props
 }) {
+  const router = useRouter();
+  const { SetEmail, SetUserId, SetName } = useStore();
   const [email, setEmail]= useState("")
   const [password, setPassword]= useState("")
   const login = async() => {
@@ -41,6 +45,10 @@ export function LoginForm({
     if (res.type == "success") {
       toast.success(res.message)
       localStorage.setItem("token", res.token);
+      SetEmail(res.user.email);
+      SetUserId(res.user.userId);
+      SetName(res.user.name);
+      router.push("/dashboard");
     }
     else {
       toast.error(res.message)

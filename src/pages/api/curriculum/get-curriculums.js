@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 const handler = async (req, res) => {
     if (req.method === "POST") {
         try {
-            const { name, subject, grade, board, bookTitle, author, publisher, edition, numberOfChapters, topics, file } = req.body;
             const token = req.headers.authorization?.split(" ")[1];
             if (!token) {
                 return res.status(401).json({
@@ -21,23 +20,18 @@ const handler = async (req, res) => {
                 });
             }
 
-
-            let newCurriculum = new Curriculum({
-                name, subject, grade, board, bookTitle, author, publisher, edition, numberOfChapters, topics, file,uploadedBy:decoded.userId
-            })
-            await newCurriculum.save();
+            const curriculums = await Curriculum.find({ uploadedBy: decoded.userId });
 
             return res.status(200).json({
                 type: "success",
-                message: "Curriculum added successfully",
-                curriculum: newCurriculum
+                message: "Curriculums retrieved successfully",
+                curriculums
             });
         } catch (err) {
-            console.error("Curriculum addition error:", err);
+            console.error("Curriculum retrieve error:", err);
             return res.status(500).json({
                 type: "error",
-                message: "Something went wrong while adding curriculum.",
-                errorCode: "LOGIN_FAILED",
+                message: "Something went wrong while getting curriculums.",
                 error: err.message,
             });
         }
