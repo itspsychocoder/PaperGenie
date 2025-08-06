@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 const handler = async (req, res) => {
     if (req.method === "POST") {
         try {
+            console.log("in delete----------------")
+
             const token = req.headers.authorization?.split(" ")[1];
             if (!token) {
                 return res.status(401).json({
