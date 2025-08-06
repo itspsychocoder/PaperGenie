@@ -56,19 +56,16 @@ export default function MyAssessments() {
             subject: "Computer Science",
             grade: "12",
             board: "CBSE",
-            type: "Mixed (MCQs + Written)",
-            assessmentType: "mixed",
+            type: "Mid-Term",
             totalMarks: 100,
             duration: 180,
             questions: 25,
-            passingPercentage: 40,
             createdDate: "2024-01-15",
             status: "Published",
             downloads: 45,
             difficulty: "Medium",
             topics: ["Python Programming", "Data Structures", "Algorithms", "OOP Concepts"],
             description: "Comprehensive mid-term examination covering Python programming fundamentals, data structures, and object-oriented programming concepts.",
-            instructions: "Read all questions carefully before attempting. Show all working for calculation questions.",
             questionBreakdown: {
                 mcq: 10,
                 shortAnswer: 8,
@@ -76,9 +73,9 @@ export default function MyAssessments() {
                 practical: 2
             },
             markingScheme: {
-                mcq: "2 marks each",
-                shortAnswer: "5 marks each",
-                longAnswer: "15 marks each",
+                mcq: "1 mark each",
+                shortAnswer: "3-5 marks each",
+                longAnswer: "10-15 marks each",
                 practical: "20 marks each"
             }
         },
@@ -88,19 +85,16 @@ export default function MyAssessments() {
             subject: "Mathematics",
             grade: "11",
             board: "NCERT",
-            type: "Full Paper",
-            assessmentType: "fullPaper",
+            type: "Final",
             totalMarks: 80,
             duration: 120,
             questions: 20,
-            passingPercentage: 35,
             createdDate: "2024-01-20",
             status: "Draft",
             downloads: 12,
             difficulty: "Hard",
             topics: ["Calculus", "Trigonometry", "Algebra", "Geometry"],
             description: "Final year assessment covering advanced mathematical concepts including calculus, trigonometry, and analytical geometry.",
-            instructions: "Use of calculator is not permitted. Draw neat diagrams wherever required.",
             questionBreakdown: {
                 mcq: 8,
                 shortAnswer: 6,
@@ -109,8 +103,8 @@ export default function MyAssessments() {
             },
             markingScheme: {
                 mcq: "1 mark each",
-                shortAnswer: "4 marks each",
-                longAnswer: "12 marks each",
+                shortAnswer: "2-4 marks each",
+                longAnswer: "8-12 marks each",
                 practical: "15 marks each"
             }
         },
@@ -120,93 +114,26 @@ export default function MyAssessments() {
             subject: "Physics",
             grade: "10",
             board: "ICSE",
-            type: "Multiple Choice Questions",
-            assessmentType: "mcqs",
+            type: "Quiz",
             totalMarks: 50,
             duration: 60,
-            questions: 25,
-            passingPercentage: 50,
+            questions: 15,
             createdDate: "2024-01-25",
             status: "Published",
             downloads: 89,
             difficulty: "Easy",
             topics: ["Light", "Reflection", "Refraction", "Optical Instruments"],
             description: "Quick assessment on light and optical phenomena for Class 10 students.",
-            instructions: "Choose the best answer for each question. Each question carries 2 marks.",
             questionBreakdown: {
-                mcq: 25,
-                shortAnswer: 0,
-                longAnswer: 0,
+                mcq: 10,
+                shortAnswer: 4,
+                longAnswer: 1,
                 practical: 0
             },
             markingScheme: {
                 mcq: "2 marks each",
-                shortAnswer: "N/A",
-                longAnswer: "N/A",
-                practical: "N/A"
-            }
-        },
-        {
-            id: 4,
-            title: "Biology Short Questions Test",
-            subject: "Biology",
-            grade: "9",
-            board: "CBSE",
-            type: "Short Questions",
-            assessmentType: "shortQuestions",
-            totalMarks: 60,
-            duration: 90,
-            questions: 12,
-            passingPercentage: 40,
-            createdDate: "2024-01-28",
-            status: "Published",
-            downloads: 23,
-            difficulty: "Medium",
-            topics: ["Cell Structure", "Photosynthesis", "Respiration", "Transportation"],
-            description: "Short answer questions focusing on fundamental biology concepts for Class 9 students.",
-            instructions: "Answer all questions in brief. Word limit: 50-100 words per question.",
-            questionBreakdown: {
-                mcq: 0,
-                shortAnswer: 12,
-                longAnswer: 0,
-                practical: 0
-            },
-            markingScheme: {
-                mcq: "N/A",
                 shortAnswer: "5 marks each",
-                longAnswer: "N/A",
-                practical: "N/A"
-            }
-        },
-        {
-            id: 5,
-            title: "English Long Questions Assessment",
-            subject: "English",
-            grade: "12",
-            board: "NCERT",
-            type: "Long Questions",
-            assessmentType: "longQuestions",
-            totalMarks: 100,
-            duration: 180,
-            questions: 5,
-            passingPercentage: 45,
-            createdDate: "2024-01-30",
-            status: "Draft",
-            downloads: 8,
-            difficulty: "Hard",
-            topics: ["Poetry Analysis", "Prose Comprehension", "Grammar", "Creative Writing"],
-            description: "Comprehensive assessment focusing on analytical and creative writing skills.",
-            instructions: "Read all questions carefully. Plan your answers before writing. Word limits are strictly enforced.",
-            questionBreakdown: {
-                mcq: 0,
-                shortAnswer: 0,
-                longAnswer: 5,
-                practical: 0
-            },
-            markingScheme: {
-                mcq: "N/A",
-                shortAnswer: "N/A",
-                longAnswer: "20 marks each",
+                longAnswer: "10 marks each",
                 practical: "N/A"
             }
         }
@@ -458,35 +385,23 @@ export default function MyAssessments() {
                                                                     <span className="text-sm font-medium">Board:</span>
                                                                     <span className="text-sm font-semibold">{assessment.board}</span>
                                                                 </div>
-                                                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
-                                                    <span className="text-sm font-medium">Type:</span>
-                                                    <span className="text-sm font-semibold">{assessment.type}</span>
-                                                </div>
-                                                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
-                                                    <span className="text-sm font-medium">Passing %:</span>
-                                                    <span className="text-sm font-semibold">{assessment.passingPercentage}%</span>
-                                                </div>
-                                                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
-                                                    <span className="text-sm font-medium">Created:</span>
-                                                    <span className="text-sm font-semibold">{assessment.createdDate}</span>
-                                                </div>
-                                            </div>
+                                                                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
+                                                                    <span className="text-sm font-medium">Type:</span>
+                                                                    <span className="text-sm font-semibold">{assessment.type}</span>
+                                                                </div>
+                                                                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-lg">
+                                                                    <span className="text-sm font-medium">Created:</span>
+                                                                    <span className="text-sm font-semibold">{assessment.createdDate}</span>
+                                                                </div>
+                                                            </div>
 
-                                            <div className="pt-2">
-                                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                                    {assessment.description}
-                                                </p>
-                                            </div>
+                                                            <div className="pt-2">
+                                                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                                                    {assessment.description}
+                                                                </p>
+                                                            </div>
 
-                                            {/* Instructions */}
-                                            {assessment.instructions && (
-                                                <div className="pt-2">
-                                                    <h5 className="text-sm font-semibold mb-2">Instructions:</h5>
-                                                    <p className="text-sm text-muted-foreground leading-relaxed bg-muted/30 p-3 rounded-lg">
-                                                        {assessment.instructions}
-                                                    </p>
-                                                </div>
-                                            )}                                                            {/* Topics */}
+                                                            {/* Topics */}
                                                             <div>
                                                                 <h5 className="text-sm font-semibold mb-2">Topics Covered:</h5>
                                                                 <div className="flex flex-wrap gap-2">
@@ -505,39 +420,25 @@ export default function MyAssessments() {
                                                                 Question Breakdown
                                                             </h4>
                                                             
-                                            <div className="space-y-3">
-                                                {Object.entries(assessment.questionBreakdown).map(([type, count]) => (
-                                                    count > 0 && (
-                                                        <div key={type} className="flex items-center justify-between py-3 px-4 bg-muted/50 rounded-lg">
-                                                            <span className="text-sm font-medium capitalize">
-                                                                {type.replace(/([A-Z])/g, ' $1').trim()}:
-                                                            </span>
-                                                            <div className="text-right">
-                                                                <span className="text-sm font-bold">{count} questions</span>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {assessment.markingScheme[type]}
-                                                                </div>
+                                                            <div className="space-y-3">
+                                                                {Object.entries(assessment.questionBreakdown).map(([type, count]) => (
+                                                                    count > 0 && (
+                                                                        <div key={type} className="flex items-center justify-between py-3 px-4 bg-muted/50 rounded-lg">
+                                                                            <span className="text-sm font-medium capitalize">
+                                                                                {type.replace(/([A-Z])/g, ' $1').trim()}:
+                                                                            </span>
+                                                                            <div className="text-right">
+                                                                                <span className="text-sm font-bold">{count} questions</span>
+                                                                                <div className="text-xs text-muted-foreground">
+                                                                                    {assessment.markingScheme[type]}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    )
+                                                                ))}
                                                             </div>
-                                                        </div>
-                                                    )
-                                                ))}
-                                            </div>
 
-                                            {/* Total and Passing Marks */}
-                                            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                                                <div className="grid grid-cols-2 gap-4 text-center">
-                                                    <div>
-                                                        <div className="text-lg font-bold text-primary">{assessment.totalMarks}</div>
-                                                        <div className="text-xs text-muted-foreground">Total Marks</div>
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-lg font-bold text-primary">
-                                                            {Math.ceil((assessment.totalMarks * assessment.passingPercentage) / 100)}
-                                                        </div>
-                                                        <div className="text-xs text-muted-foreground">Passing Marks</div>
-                                                    </div>
-                                                </div>
-                                            </div>                                                            {/* Additional Actions */}
+                                                            {/* Additional Actions */}
                                                             <div className="flex gap-2 pt-4">
                                                                 <Button size="sm" variant="outline" className="flex-1">
                                                                     <Edit className="w-4 h-4 mr-2" />
