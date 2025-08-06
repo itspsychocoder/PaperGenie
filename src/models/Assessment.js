@@ -1,6 +1,5 @@
 import mongoose,{Schema} from "mongoose";
-import { int, string } from "zod";
-import { required } from "zod/v4/core/util.cjs";
+// import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 
 const assessmentSchema = new  Schema(
@@ -9,13 +8,15 @@ const assessmentSchema = new  Schema(
 assessmentTitle :{type:String, required : true},
 subject :{type:String,required : true},
 assessmentType :{type:String},
-duration :{type:number},
-difficultyLevel :{type:String, enum:["Easy","Midium","Hard","Mixed"] },
-passingPercentage : {type : number , min : 0 , max : 100 , required : true },
-numberOfQuestions : {type : number },
-marksPerQuestion : { type : number },
+duration : {type : Number},
+difficultyLevel :{type:String, enum:["Easy","Medium","Hard","Mixed"] },
+passingPercentage : {type : Number , min : 0 , max : 100 , required : true },
+numberOfQuestions : {type : Number },
+marksPerQuestion : { type : Number },
 topicsCovered : [{type : String}],
-assessmentFile : { type :String,required: true}
+assessmentFile : { type :String,required: true},
+createdBy: {type : Schema.Types.ObjectId,ref:"User"},
+
 
 
     },
@@ -24,6 +25,8 @@ assessmentFile : { type :String,required: true}
     }
 
 )
+// assessmentSchema.plugin(mongooseAggregatePaginate)
+
 const Assessment = mongoose.models.Assessment || mongoose.model("Assessment", assessmentSchema);
 
 export default Assessment;

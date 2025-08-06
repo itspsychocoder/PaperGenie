@@ -1,17 +1,25 @@
 import Assessment from "@/models/Assessment";
 import connectDB from "@/middlewares/connectDB";
-import { asyncHandler } from "@/utilis-Backend/AsyncHandler.util";
-import { ApiResponse } from "@/utilis-Backend/apiResponse.util";
-import { ApiError } from "@/utilis-Backend/Error.util";
+// import { asyncHandler } from "@/utilis-Backend/AsyncHandler.util";
+import { ApiResponse } from "@/utilis-Backend/apiResponse.util.js";
+// import { ApiError } from "@/utilis-Backend/Error.util";
+// import { verifyJWT } from "@/middlewares/verifyJWT.middleware";
 
 const handler = async (req, res) => {
     try {
         if (req.method !== "POST") {
-            return res.status(405).json(new ApiResponse(405, "Error", "Method Not Allowed - Request must be POST"));
+            return res.status(405).json(new ApiResponse(405, "Method Not Allowed - Request must be POST"));
         }
+        if(!req.body) return res.status(500).json(new ApiResponse(500, "Req. Body not found"))
+
+        // Debug logging
+        // console.log("Request method:", req.method);
+        // console.log("Content-Type:", req.headers['content-type']);
+        // console.log("Request body:", req.body);
+        // console.log("Body keys:", Object.keys(req.body || {}));
 
         const { 
-            assessmentTitle,
+            title,
             subject,
             assessmentType, 
             duration,
@@ -20,11 +28,12 @@ const handler = async (req, res) => {
             numberOfQuestions,
             marksPerQuestion,
             topicsCovered,
-            assessmentFile
-        } = req.body;
+            assessmentFile} = req.body;
 
+console.log(title)
+const assessmentTitle = title;
         // Validate required fields
-        if (!assessmentTitle || !subject || !assessmentType) {
+        if (!title || !subject || !assessmentType) {
             return res.status(400).json(new ApiResponse(400, "Error", "Missing required fields: assessmentTitle, subject, assessmentType"));
         }
 
@@ -42,7 +51,7 @@ const handler = async (req, res) => {
 
         // Create new assessment
         const newAssessment = new Assessment({
-            title: assessmentTitle,
+            assessmentTitle,
             subject,
             assessmentType,
             duration: parseInt(duration),
@@ -51,22 +60,21 @@ const handler = async (req, res) => {
             numberOfQuestions: parseInt(numberOfQuestions),
             marksPerQuestion: parseInt(marksPerQuestion),
             totalMarks: parseInt(numberOfQuestions) * parseInt(marksPerQuestion),
-            topicsCovered: Array.isArray(topicsCovered) ? topicsCovered : topicsCovered?.split(',').map(t => t.trim()),
+            topicsCovered: Array.isArray(topicsCovered) ? topicsCovered : topicsCovered ? String(topicsCovered).split(',').map(t => t.trim()) : [],
             assessmentFile,
-            createdDate: new Date(),
-            status: "Draft"
+            
         });
-
+        
         const savedAssessment = await newAssessment.save();
 
-        return res.status(201).json(
-            new ApiResponse(201, "Success", "Assessment created successfully", savedAssessment)
+        return res.status(200).json(
+            new ApiResponse(200, "Success", "Assessment created successfully", savedAssessment)
         );
 
     } catch (error) {
-        console.error("Error creating assessment:", error);
+        console.log("Error creating assessment:", error);
         return res.status(500).json(
-            new ApiResponse(500, "Error", "Internal server error", error.message)
+            new ApiResponse(500,error.message)
         );
     }
 };
